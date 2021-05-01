@@ -50,3 +50,21 @@ test_df.plot(kind='bar')
 pacf_1_diff = pacf(diff)[1:20]
 plt.plot(pacf_1_diff)
 plt.show()
+
+test_df = pd.DataFrame([pacf_1_diff]).T
+test_df.columns = ['First Difference Partial Correlation']
+test_df.index += 1
+test_df.plot(kind='bar')
+plt.show()
+
+price_matrix = lnprice.to_numpy()
+model = ARIMA(price_matrix, order=(1,0,1))
+model_fit = model.fit(disp=0)
+print(model_fit.summary())
+predictions = model_fit.predict(122, 127, typ='levels')
+predictions
+predictionsAdjusted = np.exp(predictions)
+predictionsAdjusted
+plt.plot(predictionsAdjusted)
+plt.title("Price Prediction")
+plt.show()
