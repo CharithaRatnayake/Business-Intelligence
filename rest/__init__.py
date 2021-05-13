@@ -1,10 +1,11 @@
 import flask
 import database.configurations as db
+import blockchain
 from datetime import datetime
 import model as model
-import mysql.connector
-import sys
 import json
+
+from blockchain.__init__ import Block, Blockchain as bc
 
 app = flask.Flask(__name__)
 db_cursor = db.db_cursor
@@ -31,6 +32,15 @@ def login():
     msg_subject = msg_received["subject"]
 
     return login(msg_received)
+
+
+@app.route('/chain', methods=['GET'])
+def get_chain():
+    chain_data = []
+    for block in bc.chain:
+        chain_data.append(block.__dict__)
+    return json.dumps({"length": len(chain_data),
+                       "chain": chain_data})
 
 
 def register(msg_received):
