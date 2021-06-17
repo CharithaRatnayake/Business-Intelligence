@@ -22,31 +22,31 @@ def runArima(file_name):
     df.head()
     df
 
-    price = df['Price']
-    lnprice = np.log(price)
-    lnprice
-    plt.plot(lnprice)
+    sales = df['Sales']
+    lnsales = np.log(sales)
+    lnsales
+    plt.plot(lnsales)
     plt.show()
 
     # Test data set accuracy
-    acf_1 = acf(lnprice)[1:20]
+    acf_1 = acf(lnsales)[1:20]
     test_df = pd.DataFrame([acf_1]).T
     test_df.columns = ['Auto Correlation']
     test_df.index += 1
     test_df.plot(kind='bar')
     plt.show()
 
-    pacf_1 = pacf(lnprice)[1:20]
+    pacf_1 = pacf(lnsales)[1:20]
     test_df = pd.DataFrame([pacf_1]).T
     test_df.columns = ['Partial Auto Correlation']
     test_df.index += 1
     test_df.plot(kind='bar')
     plt.show()
 
-    result = ts.adfuller(lnprice, 1)
+    result = ts.adfuller(lnsales, 1)
     result
-    lnprice_diff = lnprice - lnprice.shift()
-    diff = lnprice_diff.dropna()
+    lnpqty_diff = lnsales - lnsales.shift()
+    diff = lnpqty_diff.dropna()
     acf_1_diff = acf(diff)[1:20]
     test_df = pd.DataFrame([acf_1_diff]).T
     test_df.columns = ['First Difference Auto Correlation']
@@ -62,8 +62,8 @@ def runArima(file_name):
     test_df.plot(kind='bar')
     plt.show()
 
-    price_matrix = lnprice.to_numpy()
-    model = ARIMA(price_matrix, order=(1, 0, 1))
+    sales_matrix = lnsales.to_numpy()
+    model = ARIMA(sales_matrix, order=(1, 0, 1))
     model_fit = model.fit(disp=0)
     print(model_fit.summary())
     predictions = model_fit.predict(122, 127, typ='levels')
@@ -71,5 +71,5 @@ def runArima(file_name):
     predictionsAdjusted = np.exp(predictions)
     predictionsAdjusted
     plt.plot(predictionsAdjusted)
-    plt.title("Price Prediction")
+    plt.title("Sales Prediction")
     plt.show()

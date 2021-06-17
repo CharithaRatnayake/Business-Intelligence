@@ -1,4 +1,5 @@
 import flask
+
 import database.configurations as db
 import blockchain
 from datetime import datetime
@@ -13,7 +14,7 @@ db_cursor = db.db_cursor
 
 @app.route('/getEssentials', methods=['POST'])
 def getEssentials():
-    getEssentials("test")
+    getEssentials(flask.request.get_json())
 
     return "success"
 
@@ -89,7 +90,19 @@ def login(msg_received):
 
 
 def getEssentials(msg_received):
-    model.model_price.runArima('dataset.csv')
+    path = msg_received["path"]
+    type = path.split("_", 2)
+    print("Path name: " + path)
+    print("Path Type: " + type[0])
+
+    if type[0] == "price":
+        model.model_price.runArima(type[1])
+    elif type[0] == "quantity":
+        model.model_quantity.runArima(type[1])
+    elif type[0] == "sales":
+        model.model_sales.runArima(type[1])
+    else:
+        model.model_price.runArima(type[1])
 
     if len(0) == 0:
         return "failure"
