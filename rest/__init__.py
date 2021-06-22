@@ -101,6 +101,8 @@ def getEssentials(msg_received):
         model.model_quantity.runArima(type[1])
     elif type[0] == "sales":
         model.model_sales.runArima(type[1])
+    elif type[0] == "import":
+        model.model_imports.runArima(type[1])
     else:
         model.model_price.runArima(type[1])
 
