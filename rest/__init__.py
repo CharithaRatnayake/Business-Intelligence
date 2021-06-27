@@ -14,9 +14,9 @@ db_cursor = db.db_cursor
 
 @app.route('/getEssentials', methods=['POST'])
 def getEssentials():
-    getEssentials(flask.request.get_json())
+    rsp = getEssentials(flask.request.get_json())
 
-    return "success"
+    return json.dumps(rsp.__dict__)
 
 
 @app.route('/register', methods=['POST'])
@@ -90,10 +90,16 @@ def login(msg_received):
 
 
 def getEssentials(msg_received):
+    print(msg_received)
     path = msg_received["path"]
     type = path.split("_", 2)
+    category = msg_received["category"]
+    sub_category = msg_received["sub_category"]
+
     print("Path name: " + path)
     print("Path Type: " + type[0])
+    print("category: " + category)
+    print("sub_category: " + sub_category)
 
     if type[0] == "price":
         model.model_price.runArima(type[1])
@@ -102,7 +108,7 @@ def getEssentials(msg_received):
     elif type[0] == "sales":
         model.model_sales.runArima(type[1])
     elif type[0] == "import":
-        model.model_imports.runArima(type[1])
+        return model.model_imports.runArima(type[1], category, sub_category)
     else:
         model.model_price.runArima(type[1])
 

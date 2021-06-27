@@ -1,28 +1,71 @@
+import json
 import os
 import pandas as pd
 import numpy as np
-import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
-import math
+import simplejson as simplejson
 from statsmodels.tsa.stattools import acf, pacf
 import statsmodels.tsa.stattools as ts
 from statsmodels.tsa.arima_model import ARIMA
+import rest.response
+from model.imports import Imports
+from rest.response import Response
+import csv
 
 
-def runArima(file_name):
+def readCSV(file):
+    list = []
+    with open(file, mode='r') as csv_file:
+        csv_reader = csv.DictReader(csv_file)
+        line_count = 0
+        for row in csv_reader:
+            if line_count == 0:
+                line_count += 1
+            im = Imports(row["Date"], row["Price"])
+            list.append(json.dumps(im.__dict__))
+            line_count += 1
+    return list
+
+
+def runArima(file_name, category, sub):
     path = "./resources/"
     os.chdir(path)
     os.getcwd()
 
+    print("File name: " + file_name)
+    print("category: " + category)
+    print("sub: " + sub)
+
+    p1 = rest.response
+
+    if category != "":
+        file_name = file_name + "_" + category
+
+    if sub != "":
+        file_name = file_name + "_" + category
+
     file = file_name + ".csv"
     print("File name: " + file)
 
-    df = pd.read_csv(file, index_col='Date', parse_dates=True)
+    try:
+        df = pd.read_csv(file, index_col='Date', parse_dates=True)
+    except FileNotFoundError:
+        p1 = Response(401, "File not found.", "")
+        return p1
+
+    p1 = Response(0, "Success", readCSV(file))
+    return p1
+
     print('Shape of data', df.shape)
     df.head()
     df
 
-    imports = df['Imports']
+    try:
+        imports = df['Imports']
+    except:
+        p1 = Response(401, "Couldn't find the data in CSV file.", "")
+        return p1
+
     lnImports = np.log(imports)
     lnImports
     plt.plot(lnImports)
