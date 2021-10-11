@@ -22,19 +22,25 @@ def readCSV(file):
             if line_count == 0:
                 line_count += 1
             im = Imports(row["Date"], row["Price"])
-            list.append(json.dumps(im.__dict__))
+            # list.append(json.dumps(im.__dict__))
+            list.append(im.__dict__)
             line_count += 1
+        print(list)
     return list
 
 
 def runArima(file_name, category, sub):
     path = "./resources/"
-    os.chdir(path)
-    os.getcwd()
+
+    try:
+        os.chdir(path)
+    except:
+        print("not an error but ok")
 
     print("File name: " + file_name)
     print("category: " + category)
     print("sub: " + sub)
+    print("Current Path: " + os.getcwd())
 
     p1 = rest.response
 
@@ -42,7 +48,7 @@ def runArima(file_name, category, sub):
         file_name = file_name + "_" + category
 
     if sub != "":
-        file_name = file_name + "_" + category
+        file_name = file_name + "_" + sub
 
     file = file_name + ".csv"
     print("File name: " + file)
@@ -53,18 +59,21 @@ def runArima(file_name, category, sub):
         p1 = Response(401, "File not found.", "")
         return p1
 
-    p1 = Response(0, "Success", readCSV(file))
-    return p1
-
     print('Shape of data', df.shape)
     df.head()
     df
 
     try:
-        imports = df['Imports']
+        imports = df['Price']
     except:
         p1 = Response(401, "Couldn't find the data in CSV file.", "")
         return p1
+
+
+    p1 = Response(0, "Success", readCSV(file))
+    return p1
+
+    df.plot()
 
     lnImports = np.log(imports)
     lnImports
@@ -109,7 +118,7 @@ def runArima(file_name, category, sub):
     model = ARIMA(import_matrix, order=(1, 0, 1))
     model_fit = model.fit(disp=0)
     print(model_fit.summary())
-    predictions = model_fit.predict(122, 127, typ='levels')
+    predictions = model_fit.predict(0, 60, typ='levels')
     predictions
     predictionsAdjusted = np.exp(predictions)
     predictionsAdjusted

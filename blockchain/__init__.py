@@ -2,6 +2,9 @@ from hashlib import sha256
 import json
 import time
 
+from flask import Flask, request
+import requests
+
 
 class Block:
     def __init__(self, index, transactions, timestamp, previous_hash):
@@ -22,7 +25,6 @@ class Block:
 class Blockchain:
     # difficulty of our PoW algorithm
     difficulty = 2
-    chain = []
 
     def __init__(self):
         self.unconfirmed_transactions = []
