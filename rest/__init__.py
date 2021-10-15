@@ -1,13 +1,16 @@
+import time
 import flask
 from flask import send_from_directory
-
-import database.configurations as db
-import model as model
 import json
 import rest.response
 import os
 from rest.response import Response
+from apscheduler.schedulers.background import BackgroundScheduler
+
+import database.configurations as db
 from blockchain import Block, Blockchain
+import model as model
+import firebase as firebase
 
 app = flask.Flask(__name__)
 db_cursor = db.db_cursor
@@ -16,6 +19,15 @@ blockchain = Blockchain()
 
 UPLOAD_FOLDER = './upload'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+
+def print_date_time():
+    firebase.runPrediction()
+
+
+scheduler = BackgroundScheduler()
+scheduler.add_job(func=print_date_time, trigger="interval", seconds=60*60)
+scheduler.start()
 
 
 @app.route('/img/<filename>')
