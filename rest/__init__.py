@@ -26,7 +26,7 @@ def print_date_time():
 
 
 scheduler = BackgroundScheduler()
-scheduler.add_job(func=print_date_time, trigger="interval", seconds=60*60)
+scheduler.add_job(func=print_date_time, trigger="interval", seconds=60*1)
 scheduler.start()
 
 
@@ -92,6 +92,13 @@ def getShops():
 @app.route('/getAllShops', methods=['GET'])
 def getAllShops():
     rsp = getAllShops()
+
+    return json.dumps(rsp.__dict__)
+
+
+@app.route('/getNotifications', methods=['GET'])
+def getNotifications():
+    rsp = getNotifications(flask.request.args)
 
     return json.dumps(rsp.__dict__)
 
@@ -364,6 +371,29 @@ def getAllShops():
 
     if len(records) == 0:
         p1 = Response(1, "No shops found.", None)
+        return p1
+
+    for result in records:
+        json_data.append(dict(zip(row_headers, result)))
+        print(json_data)
+
+    return Response(0, "Success.", json_data)
+
+
+def getNotifications(msg_received):
+    uid = msg_received["uid"]
+    if uid == "0":
+        select_query = '''SELECT * FROM report'''
+    else:
+        select_query = '''SELECT * FROM report where uid = %s''' % uid
+
+    db_cursor.execute(select_query)
+    row_headers = [x[0] for x in db_cursor.description]
+    records = db_cursor.fetchall()
+    json_data = []
+
+    if len(records) == 0:
+        p1 = Response(1, "No notifications found.", None)
         return p1
 
     for result in records:
