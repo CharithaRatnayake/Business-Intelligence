@@ -36,21 +36,35 @@ def readCSVImports(file, row1, row2):
 
 def runPrediction():
     # Imports
+    CoconutOil = importPrediction("./resources/import_CoconutOil.csv")
     Milk = importPrediction("./resources/import_Milk.csv")
-    Rice = importPrediction("./resources/import_Rice.csv")
+    Rice_Nadu = importPrediction("./resources/import_Rice_Nadu.csv")
+    Rice_Samba = importPrediction("./resources/import_Rice_Samba.csv")
+    Sugar = importPrediction("./resources/import_Sugar.csv")
+    db.child("imports").child("CoconutOil").set(CoconutOil)
     db.child("imports").child("Milk").set(Milk)
-    db.child("imports").child("Rice").set(Rice)
+    db.child("imports").child("Rice_Nadu").set(Rice_Nadu)
+    db.child("imports").child("Rice_Samba").set(Rice_Samba)
+    db.child("imports").child("Sugar").set(Sugar)
 
     # Price
-    Sugar = pricePrediction("./resources/price_Sugar.csv")
-    db.child("price").child("Sugar").set(Sugar)
+    Sugar_Retail_Dambulla = pricePrediction("./resources/price_Sugar_Retail_Dambulla.csv")
+    Sugar_Retail_Pettah = pricePrediction("./resources/price_Sugar_Retail_Pettah.csv")
+    Sugar_WholeSale_Dambulla = pricePrediction("./resources/price_Sugar_WholeSale_Dambulla.csv")
+    Sugar_WholeSale_Pettah = pricePrediction("./resources/price_Sugar_WholeSale_Pettah.csv")
+    db.child("price").child("Sugar_Retail_Dambulla").set(Sugar_Retail_Dambulla)
+    db.child("price").child("Sugar_Retail_Pettah").set(Sugar_Retail_Pettah)
+    db.child("price").child("Sugar_WholeSale_Dambulla").set(Sugar_WholeSale_Dambulla)
+    db.child("price").child("Sugar_WholeSale_Pettah").set(Sugar_WholeSale_Pettah)
 
     # Sales
     CoconutOil = salesPrediction("./resources/sales_CoconutOil.csv")
+    Dhal = salesPrediction("./resources/sales_Dhal.csv")
     MilkPowder = salesPrediction("./resources/sales_MilkPowder.csv")
     Rice_Nadu = salesPrediction("./resources/sales_Rice_Nadu.csv")
     Rice_Samba = salesPrediction("./resources/sales_Rice_Samba.csv")
     Sugar = salesPrediction("./resources/sales_Sugar.csv")
+    db.child("sales").child("Dhal").set(Dhal)
     db.child("sales").child("CoconutOil").set(CoconutOil)
     db.child("sales").child("MilkPowder").set(MilkPowder)
     db.child("sales").child("Rice_Nadu").set(Rice_Nadu)
@@ -127,5 +141,5 @@ def salesPrediction(path):
             if max < price:
                 max = price
 
-    prediction = Prediction("price", "Price", min, max, currentMonthPrice/count)
+    prediction = Prediction("Sales", "Sales", min, max, currentMonthPrice/count)
     return prediction.__dict__
